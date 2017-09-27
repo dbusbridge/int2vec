@@ -8,6 +8,6 @@ Distributed representations are awesome. They can be created in many creative wa
   + [Adrian Colyer - The amazing power of word vectors](https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/)
   + [Sebastian Ruder - On word embeddings](http://ruder.io/word-embeddings-1/index.html)
  
- + *Papers*
++ *Papers*
   + [Kikolov et al. - Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781)
   + [Xin Rong - word2vec Parameter Learning Explained](https://arxiv.org/abs/1411.2738)
