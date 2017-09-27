@@ -14,7 +14,7 @@ Distributed representations are awesome. They can be created in many creative wa
 
 ## This code
 
-Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes.
+Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes. All embeddigns ar `L2` normalised so they fit on the unit circle.
 
 ## The task
 Let's imagine we know nothing about integers from 0 to 9, and let's imagine we've come across a book containing two chapters:
@@ -36,6 +36,15 @@ Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_s
 
 
 
-And `Int2Vec` is complete.
+Our `Int2Vec` mission is complete.
 
 ## Bonus fun task
+We have just come across another corpus which contains (mostly) ordered, circular sequences, that is, sequences of the type:
+```
+[8, 9, 0, 1, 2, ..., 8, 9, 0, ...]
+```
+(Technical aside: a small amout of noise is added to the sequences to let them contain more information about which numbers are close to eachother)
+Of course, knowing about numbers, we don't know that they are ordered yet. The code for training with this new corpus is in `int2vec_skip_circle.py` and the results are glorious:
+
+
+
