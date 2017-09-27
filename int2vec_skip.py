@@ -4,6 +4,8 @@ import tensorlayer as tl
 
 import matplotlib.pyplot as plt
 
+from sklearn.preprocessing import normalize
+
 
 flags = tf.flags
 logging = tf.logging
@@ -118,8 +120,8 @@ for e in range(FLAGS.epochs):
 skip_embeddings = skip_sess.run(
     skip_net_emb.outputs, feed_dict={skip_x: np.arange(10)})
 # Normalise them
-skip_embeddings = (skip_embeddings /
-                   np.abs(skip_embeddings).sum(axis=1)[:, np.newaxis])
+skip_embeddings = normalize(skip_embeddings, norm='l2', axis=1)
+
 
 # Plot the embedding (don't worry - this is supposed to suck!)
 fig, ax = plt.subplots()

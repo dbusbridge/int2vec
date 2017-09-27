@@ -4,6 +4,8 @@ import tensorlayer as tl
 
 import matplotlib.pyplot as plt
 
+from sklearn.preprocessing import normalize
+
 
 flags = tf.flags
 logging = tf.logging
@@ -108,8 +110,8 @@ for e in range(FLAGS.epochs):
 auto_embeddings = auto_sess.run(
     auto_net_emb.outputs, feed_dict={auto_x: np.arange(10)})
 # Normalise them
-auto_embeddings = (auto_embeddings /
-                   np.abs(auto_embeddings).sum(axis=1)[:, np.newaxis])
+auto_embeddings = normalize(auto_embeddings, norm='l2', axis=1)
+
 
 # Plot the embedding (don't worry - this is supposed to suck!)
 fig, ax = plt.subplots()
