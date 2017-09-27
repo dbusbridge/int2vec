@@ -21,7 +21,7 @@ flags.DEFINE_float(
     flag_name='learning_rate', default_value=1e-2,
     docstring='The learning rate for the optimiser.')
 flags.DEFINE_integer(
-    flag_name='epochs', default_value=10000,
+    flag_name='epochs', default_value=2500,
     docstring='The number of epochs to train for.')
 
 
