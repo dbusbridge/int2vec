@@ -1,4 +1,4 @@
-# int2vec - distributed representations for integers
+# Int2Vec - A distributed representations for integers
 
 ## Background
 
