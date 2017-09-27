@@ -129,7 +129,7 @@ skip_embeddings = skip_sess.run(
 skip_embeddings = normalize(skip_embeddings, norm='l2', axis=1)
 
 
-# Plot the embedding (don't worry - this is supposed to suck!)
+# Plot the embedding
 fig, ax = plt.subplots()
 for i, (x, y) in enumerate(skip_embeddings):
     ax.scatter(x, y, color='purple')
