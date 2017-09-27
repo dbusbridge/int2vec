@@ -14,7 +14,7 @@ Distributed representations are awesome. They can be created in many creative wa
 
 ## This code
 
-Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec`. All embeddings are 2 dimensional for visualisation purposes.
+Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes.
 
 ## The task
 Let's imagine we know nothing about integers from 0 to 9, and let's imagine we've come across a book containing two chapters:
@@ -32,4 +32,10 @@ This should not really be a surprise if you think about it however. We are only 
 
 ### Attempt 2 - Skipgram
 
-Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`.
+Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`. In this case, we want an integer to reconstruct the integers that appear either side of it in the corpus (this is essentially how `Word2Vec` is built in skipgram mode). The result is satisfying:
+
+
+
+And `Int2Vec` is complete.
+
+## Bonus fun task
