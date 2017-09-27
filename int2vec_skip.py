@@ -45,7 +45,7 @@ chapter_odd_numbers = np.random.choice(
     a=odd_numbers, size=FLAGS.chapter_size, replace=True)
 
 
-# Skip-thought ################################################################
+# Skip-gram ################################################################
 
 # Build the data for the numbers either side of itself
 skip_x_even = [np.array(chapter_even_numbers[i])
@@ -65,7 +65,7 @@ skip_x_all = skip_x_even + skip_x_odd
 skip_y_all = skip_y_even + skip_y_odd
 
 # Build the model
-with tf.variable_scope('skipthought_int2vec'):
+with tf.variable_scope('skipgram_int2vec'):
     with tf.variable_scope('inputs'):
         skip_x = tf.placeholder(tf.int32, shape=(None,), name="x")
         skip_y_ = tf.placeholder(tf.int32, shape=(None, 2), name="y_")
@@ -126,4 +126,4 @@ fig, ax = plt.subplots()
 for i, (x, y) in enumerate(skip_embeddings):
     ax.scatter(x, y, color='purple')
     ax.annotate(i, xy=(x, y), fontsize=20)
-ax.set_title('Skipthought int2vec')
+ax.set_title('Skipgram int2vec')
