@@ -1,4 +1,4 @@
-# Int2Vec - A distributed representations for integers
+# Int2Vec - A distributed representation for integers
 
 ## Background
 
@@ -48,6 +48,7 @@ We have just come across another corpus which contains (mostly) ordered, circula
 [8, 9, 0, 1, 2, ..., 8, 9, 0, ...]
 ```
 (Technical aside: a small amout of noise is added to the sequences to let them contain more information about which numbers are close to eachother)
+
 Of course, knowing about numbers, we don't know that they are ordered yet. The code for training with this new corpus is in `int2vec_skip_circle.py` and the results are glorious:
 
 <br>
