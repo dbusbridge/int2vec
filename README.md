@@ -26,7 +26,9 @@ Using this book, we would like to create an embedding for any integer that can t
 
 Our first attempt is to construct an autoencoder, and is found in `int2vec_auto.py`. The result is underwhelming:
 
-
+<br>
+<p align="center"><img src="img/int2vec_auto.png" height="400" width="400"></p>
+<br>
 
 This should not really be a surprise if you think about it however. We are only feeding essentially one-hot representations of the integers and forcing these representations to reconstruct themselves. Since integers don't have any internal structre (unless we were to, for example, build a binary representation), then this essentially becomes a hashing procedure. There is no reason why a hashing procedure should produce a representation of integers that is in any way useful.
 
@@ -34,7 +36,9 @@ This should not really be a surprise if you think about it however. We are only 
 
 Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`. In this case, we want an integer to reconstruct the integers that appear either side of it in the corpus (this is essentially how `Word2Vec` is built in skipgram mode). The result is satisfying:
 
-
+<br>
+<p align="center"><img src="img/int2vec_skip.png" height="400" width="400"></p>
+<br>
 
 Our `Int2Vec` mission is complete.
 
@@ -45,6 +49,10 @@ We have just come across another corpus which contains (mostly) ordered, circula
 ```
 (Technical aside: a small amout of noise is added to the sequences to let them contain more information about which numbers are close to eachother)
 Of course, knowing about numbers, we don't know that they are ordered yet. The code for training with this new corpus is in `int2vec_skip_circle.py` and the results are glorious:
+
+<br>
+<p align="center"><img src="img/int2vec_skip_circle.png" height="400" width="400"></p>
+<br>
 
 
 
