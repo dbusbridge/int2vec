@@ -130,4 +130,6 @@ fig, ax = plt.subplots()
 for i, (x, y) in enumerate(skip_embeddings):
     ax.scatter(x, y, color='purple')
     ax.annotate(i, xy=(x, y), fontsize=20)
-ax.set_title('Skipgram int2vec')
+ax.set_title('Skipgram int2vec', fontsize=30)
+# fig.savefig('img/int2vec_skip.png',
+#             dpi=300, figsize=(10, 10), bbox_inches='tight')
