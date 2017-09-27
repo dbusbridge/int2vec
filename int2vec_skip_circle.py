@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import normalize
 
+plt.style.use('seaborn-white')
+
 
 flags = tf.flags
 logging = tf.logging
