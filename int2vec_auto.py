@@ -44,18 +44,19 @@ chapter_even_numbers = np.random.choice(
 chapter_odd_numbers = np.random.choice(
     a=odd_numbers, size=FLAGS.chapter_size, replace=True)
 
+# Autoencoder #################################################################
 
-# Autoencoder attempt - number predicts itself
+# Build the data for the number predicting itself
 auto_x_even = [np.array(chapter_even_numbers[i])
                for i in range(FLAGS.chapter_size)]
 
 auto_y_even = [np.array(chapter_even_numbers[i])
                for i in range(FLAGS.chapter_size)]
 
-auto_x_odd = [np.array(chapter_even_numbers[i])
+auto_x_odd = [np.array(chapter_odd_numbers[i])
               for i in range(FLAGS.chapter_size)]
 
-auto_y_odd = [np.array(chapter_even_numbers[i])
+auto_y_odd = [np.array(chapter_odd_numbers[i])
               for i in range(FLAGS.chapter_size)]
 
 # Combine the data
@@ -110,9 +111,9 @@ auto_embeddings = auto_sess.run(
 auto_embeddings = (auto_embeddings /
                    np.abs(auto_embeddings).sum(axis=1)[:, np.newaxis])
 
-# Plot them
+# Plot the embedding (don't worry - this is supposed to suck!)
 fig, ax = plt.subplots()
 for i, (x, y) in enumerate(auto_embeddings):
     ax.scatter(x, y, color='purple')
-    ax.annotate(i, xy=(x, y))
+    ax.annotate(i, xy=(x, y), fontsize=20)
 ax.set_title('Autoencoder int2vec')
