@@ -51,6 +51,7 @@ chapter_noise = np.random.randint(
     high=FLAGS.chapter_noise,
     size=FLAGS.chapter_size)
 
+# Add noise and Fix out of vocabulary numbers
 chapter = chapter + chapter_noise
 chapter[chapter < min_inc_num] = min_inc_num
 chapter[chapter > max_inc_num] = max_inc_num
