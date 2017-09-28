@@ -14,7 +14,7 @@ Distributed representations are awesome. They can be created in many creative wa
 
 ## This code
 
-Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes. All embeddigns ar `L2` normalised so they fit on the unit circle.
+Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes. All embeddings ar `L2` normalised so they fit on the unit circle.
 
 ## The task
 Let's imagine we know nothing about integers from 0 to 9, and let's imagine we've come across a book containing two chapters:
@@ -30,7 +30,7 @@ Our first attempt is to construct an autoencoder, and is found in `int2vec_auto.
 <p align="center"><img src="img/int2vec_auto.png" height="400" width="400"></p>
 <br>
 
-This should not really be a surprise if you think about it however. We are only feeding essentially one-hot representations of the integers and forcing these representations to reconstruct themselves. Since integers don't have any internal structre (unless we were to, for example, build a binary representation), then this essentially becomes a hashing procedure. There is no reason why a hashing procedure should produce a representation of integers that is in any way useful.
+This should not really be a surprise if you think about it however. We are only feeding essentially one-hot representations of the integers and forcing these representations to reconstruct themselves. Since integers don't have any internal structure (unless we were to, for example, build a binary representation), then this essentially becomes a hashing procedure. There is no reason why a hashing procedure should produce a representation of integers that is in any way useful.
 
 ### Attempt 2 - Skipgram
 
@@ -47,13 +47,10 @@ We have just come across another corpus which contains (mostly) ordered, circula
 ```
 [8, 9, 0, 1, 2, ..., 8, 9, 0, ...]
 ```
-(Technical aside: a small amout of noise is added to the sequences to let them contain more information about which numbers are close to eachother)
+(Technical aside: a small amount of noise is added to the sequences to let them contain more information about which numbers are close to each other)
 
 Of course, knowing about numbers, we don't know that they are ordered yet. The code for training with this new corpus is in `int2vec_skip_circle.py` and the results are glorious:
 
 <br>
 <p align="center"><img src="img/int2vec_skip_circle.png" height="400" width="400"></p>
 <br>
-
-
-
