@@ -1,6 +1,5 @@
 matplotlib
 numpy
 scikit-learn
-scipy
-tensorflow
-git+https://github.com/zsdonghao/tensorlayer.git
+tensorflow==1.7.0
+dm-sonnet==1.18
