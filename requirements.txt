@@ -1,5 +1,6 @@
-matplotlib
+matplotlib==2.1.2
 numpy
+scipy
 scikit-learn
 tensorflow==1.7.0
 dm-sonnet==1.18

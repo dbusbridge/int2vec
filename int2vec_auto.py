@@ -1,125 +1,79 @@
 import numpy as np
+import sonnet as snt
 import tensorflow as tf
-import tensorlayer as tl
 
 import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import normalize
 
+from int2vec.corpora import autoencoder_data, get_input_fn, NUMBER_CLASSES
+from int2vec.estimator import get_estimator_fn, get_model_fn
+
 plt.style.use('seaborn-white')
 
 
-flags = tf.flags
-logging = tf.logging
+tf.logging.set_verbosity(tf.logging.DEBUG)
+FLAGS = tf.app.flags.FLAGS
 
-flags.DEFINE_integer(
-    flag_name='seed', default_value=123,
-    docstring='The random seed.')
-flags.DEFINE_integer(
-    flag_name='chapter_size', default_value=5 * 10 ** 2,
-    docstring='The size of each chapter.')
-flags.DEFINE_integer(
-    flag_name='embedding_size', default_value=2,
-    docstring='The size of the embedding.')
-flags.DEFINE_float(
-    flag_name='learning_rate', default_value=1e-2,
-    docstring='The learning rate for the optimiser.')
-flags.DEFINE_integer(
-    flag_name='epochs', default_value=2500,
-    docstring='The number of epochs to train for.')
-
-
-FLAGS = flags.FLAGS
+tf.app.flags.DEFINE_integer(name='seed', default=123, help='The random seed.')
+tf.app.flags.DEFINE_integer(name='chapter_size', default=10 ** 3,
+                            help='The size of each chapter.')
+tf.app.flags.DEFINE_integer(name='embed_dim', default=2,
+                            help='The size of the embedding.')
+tf.app.flags.DEFINE_float(name='learning_rate', default=1.0e-2,
+                          help='The learning rate.')
+tf.app.flags.DEFINE_integer(name='epochs', default=100,
+                            help='The number of epochs in the training set.')
+tf.app.flags.DEFINE_integer(name='max_steps', default=1000,
+                            help='The number of training steps.')
 
 np.random.seed(FLAGS.seed)
-tf.set_random_seed(FLAGS.seed)
+
+data = autoencoder_data(size=FLAGS.chapter_size)
+input_fn = get_input_fn(data=data,
+                        batch_size=FLAGS.chapter_size, epochs=FLAGS.epochs)
+
+params = tf.contrib.training.HParams(
+    embed_dim=FLAGS.embed_dim,
+    learning_rate=FLAGS.learning_rate,
+    n_classes=NUMBER_CLASSES,
+    max_steps=FLAGS.max_steps)
+
+run_config = tf.estimator.RunConfig(model_dir='/tmp/int2vec/autoencoder',
+                                    tf_random_seed=FLAGS.seed)
 
 
-# Set of even numbers from 0 to 8 inclusive
-even_numbers = range(0, 10, 2)
+def architecture(features, params):
+    integer_embed = snt.Embed(
+        vocab_size=params.n_classes, embed_dim=params.embed_dim,
+        name='integer_embed')
+    projection = snt.Linear(output_size=params.n_classes)
 
-# Set of odd numbers from 1 to 9 inclusive
-odd_numbers = range(1, 10, 2)
+    net = integer_embed(features['x'])
+    net = projection(net)
 
-
-# Build the corpus
-chapter_even_numbers = np.random.choice(
-    a=even_numbers, size=FLAGS.chapter_size, replace=True)
-chapter_odd_numbers = np.random.choice(
-    a=odd_numbers, size=FLAGS.chapter_size, replace=True)
-
-# Autoencoder #################################################################
-
-# Build the data for the number predicting itself
-auto_x_even = [np.array(chapter_even_numbers[i])
-               for i in range(FLAGS.chapter_size)]
-
-auto_y_even = [np.array(chapter_even_numbers[i])
-               for i in range(FLAGS.chapter_size)]
-
-auto_x_odd = [np.array(chapter_odd_numbers[i])
-              for i in range(FLAGS.chapter_size)]
-
-auto_y_odd = [np.array(chapter_odd_numbers[i])
-              for i in range(FLAGS.chapter_size)]
-
-# Combine the data
-auto_x_all = auto_x_even + auto_x_odd
-auto_y_all = auto_y_even + auto_y_odd
-
-# Build the model
-with tf.variable_scope('autoencoder_int2vec'):
-    with tf.variable_scope('inputs'):
-        auto_x = tf.placeholder(tf.int32, shape=(None,), name="x")
-        auto_y_ = tf.placeholder(tf.int32, shape=(None,), name="y_")
-
-    with tf.variable_scope('embedding'):
-        auto_net_emb = tl.layers.EmbeddingInputlayer(
-            auto_x,
-            vocabulary_size=10,
-            embedding_size=FLAGS.embedding_size,
-            name='auto_embedding')
-
-    with tf.variable_scope('output'):
-        auto_net = tl.layers.DenseLayer(
-            auto_net_emb, n_units=10, act=tf.identity, name='auto_output')
-
-    with tf.variable_scope('loss'):
-        auto_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
-            labels=auto_y_, logits=auto_net.outputs)
-        auto_loss = tf.reduce_sum(auto_loss, name='auto_loss')
-
-    with tf.variable_scope('optimiser'):
-        auto_op = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
-        auto_train_op = auto_op.minimize(auto_loss)
-
-# Train it!
-auto_sess = tf.Session()
-tl.layers.initialize_global_variables(auto_sess)
-
-for e in range(FLAGS.epochs):
-    if e % 500 == 0:
-        loss = auto_sess.run(
-            auto_loss, feed_dict={auto_x: auto_x_all, auto_y_: auto_y_all})
-        print('### Epoch: {e}/{max_e} loss: {loss:.2f} ###'.format(
-            e=e, max_e=FLAGS.epochs, loss=loss))
-    auto_sess.run(
-        auto_train_op,
-        feed_dict={auto_x: auto_x_all, auto_y_: auto_y_all})
+    return net
 
 
-# Get the embeddings for each number
-auto_embeddings = auto_sess.run(
-    auto_net_emb.outputs, feed_dict={auto_x: np.arange(10)})
-# Normalise them
-auto_embeddings = normalize(auto_embeddings, norm='l2', axis=1)
+model_fn = get_model_fn(architecture=architecture)
+estimator_fn = get_estimator_fn(model_fn=model_fn)
 
+estimator = estimator_fn(run_config=run_config, params=params)
+
+train_spec = tf.estimator.TrainSpec(input_fn=input_fn,
+                                    max_steps=params.max_steps)
+eval_spec = tf.estimator.EvalSpec(input_fn=input_fn, steps=1)
+
+tf.estimator.train_and_evaluate(estimator=estimator,
+                                train_spec=train_spec, eval_spec=eval_spec)
+
+embeddings = estimator.get_variable_value(name='integer_embed/embeddings')
+embeddings = normalize(embeddings, norm='l2', axis=1)
 
 # Plot the embedding (don't worry - this is supposed to suck!)
 fig, ax = plt.subplots()
-for i, (x, y) in enumerate(auto_embeddings):
-    ax.scatter(x, y, color='purple')
-    ax.annotate(i, xy=(x, y), fontsize=20)
+for i, (x, y) in enumerate(embeddings):
+    ax.scatter(x, y, color='purple'), ax.annotate(i, xy=(x, y), fontsize=20)
 ax.set_title('Autoencoder int2vec', fontsize=30)
 # fig.savefig('img/int2vec_auto.png',
 #             dpi=300, figsize=(10, 10), bbox_inches='tight')
