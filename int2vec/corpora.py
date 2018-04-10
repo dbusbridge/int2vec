@@ -21,12 +21,33 @@ def autoencoder_data(size):
     odd_chapter, even_chapter = _get_even_chapter(size), _get_odd_chapter(size)
 
     x = np.concatenate([even_chapter, odd_chapter], axis=0)
-    y = x
 
-    return {'x': x, 'y': y}
+    return {'current': x}
 
 
-def get_input_fn(data, batch_size, epochs=None, shuffle=True):
+def _build_skipgram(a):
+    current, previous, next = a[1:-1], a[0:-2], a[2:]
+
+    return {'current': current, 'previous': previous, 'next': next}
+
+
+def skipgram_data(size):
+    odd_chapter, even_chapter = _get_even_chapter(size), _get_odd_chapter(size)
+
+    odd_skipgrams = _build_skipgram(odd_chapter)
+    even_skipgrams = _build_skipgram(even_chapter)
+
+    current = np.concatenate([odd_skipgrams['current'],
+                              even_skipgrams['current']], axis=0)
+    previous = np.concatenate([odd_skipgrams['previous'],
+                              even_skipgrams['previous']], axis=0)
+    next = np.concatenate([odd_skipgrams['next'],
+                           even_skipgrams['next']], axis=0)
+
+    return {'current': current, 'previous': previous, 'next': next}
+
+
+def get_input_fn(data, feature_label_fn, batch_size, epochs=None, shuffle=True):
     def input_fn():
         dataset = tf.data.Dataset.from_tensor_slices(data)
 
@@ -41,9 +62,6 @@ def get_input_fn(data, batch_size, epochs=None, shuffle=True):
         iterator = dataset.make_one_shot_iterator()
         next_elements = iterator.get_next()
 
-        next_features = {'x': next_elements['x']}
-        next_labels = {'y': next_elements['y']}
-
-        return next_features, next_labels
+        return feature_label_fn(next_elements)
 
     return input_fn

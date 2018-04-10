@@ -30,7 +30,16 @@ tf.app.flags.DEFINE_integer(name='max_steps', default=1000,
 np.random.seed(FLAGS.seed)
 
 data = autoencoder_data(size=FLAGS.chapter_size)
-input_fn = get_input_fn(data=data,
+
+
+def feature_label_fn(next_elements):
+    features = next_elements['current']
+    labels = next_elements['current']
+
+    return features, labels
+
+
+input_fn = get_input_fn(data=data, feature_label_fn=feature_label_fn,
                         batch_size=FLAGS.chapter_size, epochs=FLAGS.epochs)
 
 params = tf.contrib.training.HParams(
@@ -49,7 +58,7 @@ def architecture(features, params):
         name='integer_embed')
     projection = snt.Linear(output_size=params.n_classes)
 
-    net = integer_embed(features['x'])
+    net = integer_embed(features)
     net = projection(net)
 
     return net
@@ -75,5 +84,6 @@ fig, ax = plt.subplots()
 for i, (x, y) in enumerate(embeddings):
     ax.scatter(x, y, color='purple'), ax.annotate(i, xy=(x, y), fontsize=20)
 ax.set_title('Autoencoder int2vec', fontsize=30)
+
 # fig.savefig('img/int2vec_auto.png',
 #             dpi=300, figsize=(10, 10), bbox_inches='tight')

@@ -33,7 +33,6 @@ def get_model_fn(architecture):
         if mode == ModeKeys.PREDICT:
             class_probabilities = tf.nn.softmax(logits,
                                                 name='class_probabilities')
-
             predictions = {
                 'logits': logits,
                 'classes': tf.argmax(input=logits, axis=1),
@@ -48,7 +47,7 @@ def get_model_fn(architecture):
             features=features,
             mode=mode,
             logits=logits,
-            labels=labels['y'],
+            labels=labels,
             train_op_fn=_get_train_op_fn(params=params))
 
     return model_fn
