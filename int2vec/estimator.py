@@ -13,21 +13,21 @@ def _get_train_op_fn(params):
     return train_op_fn
 
 
-def get_model_fn(architecture):
+def get_model_fn(architecture_fn):
     def model_fn(features, labels, mode, params):
         """Model function used in the estimator.
 
         Args:
             features (dict): Input features to the model.
             labels (dict): Labels for training and evaluation.
-            mode (ModeKeys): Specifies if training, evaluation or inferring..
+            mode (ModeKeys): Specifies if training, evaluation or inferring.
             params (HParams): The Hyperparameters.
 
         Returns:
             (EstimatorSpec) The model to be run by Estimator.
 
         """
-        logits = architecture(features, params)
+        logits = architecture_fn(features, params)
 
         # If mode is inference, return the predictions
         if mode == ModeKeys.PREDICT:
@@ -41,7 +41,10 @@ def get_model_fn(architecture):
             return tf.estimator.EstimatorSpec(mode=mode,
                                               predictions=predictions)
 
-        head = tf.contrib.estimator.multi_class_head(n_classes=params.n_classes)
+        heads = [tf.contrib.estimator.multi_class_head(
+            n_classes=params.n_classes, name=name) for name in logits]
+
+        head = tf.contrib.estimator.multi_head(heads=heads)
 
         return head.create_estimator_spec(
             features=features,
@@ -54,7 +57,6 @@ def get_model_fn(architecture):
 
 
 def get_estimator_fn(model_fn):
-
     def estimator_fn(run_config, params):
         """Return the model as a TensorFlow Estimator object.
 
