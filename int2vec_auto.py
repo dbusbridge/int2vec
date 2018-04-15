@@ -3,7 +3,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from int2vec.architecture import get_architecture_fn
+from int2vec.architecture import get_architecture_fn, get_feature_label_cols
 from int2vec.datasets import odd_even, dataset_utils
 from int2vec.estimator import get_estimator_fn, get_model_fn
 from int2vec.figures import make_plots, save_plots
@@ -33,18 +33,6 @@ tf.app.flags.DEFINE_string(name='dataset', default='odd_even',
 tf.app.flags.DEFINE_boolean(name='save_plots', default=True,
                             help='`True` to save plots to model dir, `False` '
                                  'otherwise.')
-
-_ARCHITECTURE_FEATURES_LABELS = {
-    'autoencoder': (['current'], ['current']),
-    'skipgram': (['current'], ['previous', 'next'])}
-
-
-def get_feature_label_cols(architecture):
-    if architecture not in _ARCHITECTURE_FEATURES_LABELS:
-        raise ValueError("Unknown architecture {}. Must be one of {}".format(
-            architecture, tuple(_ARCHITECTURE_FEATURES_LABELS.keys())))
-
-    return _ARCHITECTURE_FEATURES_LABELS[architecture]
 
 
 def get_train_eval_spec(params):

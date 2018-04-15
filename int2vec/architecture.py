@@ -1,6 +1,19 @@
 import sonnet as snt
 
 
+_ARCHITECTURE_FEATURES_LABELS = {
+    'autoencoder': (['current'], ['current']),
+    'skipgram': (['current'], ['previous', 'next'])}
+
+
+def get_feature_label_cols(architecture):
+    if architecture not in _ARCHITECTURE_FEATURES_LABELS:
+        raise ValueError("Unknown architecture {}. Must be one of {}".format(
+            architecture, tuple(_ARCHITECTURE_FEATURES_LABELS.keys())))
+
+    return _ARCHITECTURE_FEATURES_LABELS[architecture]
+
+
 def get_architecture_fn(label_cols):
     def architecture_fn(features, params):
         integer_embed = snt.Embed(
