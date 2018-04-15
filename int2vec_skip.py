@@ -6,7 +6,7 @@ from sklearn.preprocessing import normalize
 from int2vec.architecture import get_architecture_fn
 from int2vec.datasets import odd_even, dataset_utils
 from int2vec.estimator import get_estimator_fn, get_model_fn
-from int2vec.figures import plot_embeddings
+from int2vec.figures import _plot_embeddings
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 FLAGS = tf.app.flags.FLAGS
@@ -69,8 +69,8 @@ tf.estimator.train_and_evaluate(estimator=estimator,
 embeddings = estimator.get_variable_value(name='integer_embed/embeddings')
 embeddings = normalize(embeddings, norm='l2', axis=1)
 
-emb_plot = plot_embeddings(embeddings,
-                           title='int2vec autoencoder integer embeddings')
+emb_plot = _plot_embeddings(embeddings,
+                            title='int2vec autoencoder integer embeddings')
 
 projections = {
     col: estimator.get_variable_value(name='projection_{}/w'.format(col)).T
@@ -79,7 +79,7 @@ projections = {col: normalize(p, norm='l2', axis=1)
                for col, p in projections.items()}
 
 proj_plots = {
-    col: plot_embeddings(
+    col: _plot_embeddings(
         p,
         title='int2vec skipgram integer {} projection'.format(col))
     for col, p in projections.items()}

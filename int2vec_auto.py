@@ -1,12 +1,12 @@
+import os
+
 import numpy as np
 import tensorflow as tf
-
-from sklearn.preprocessing import normalize
 
 from int2vec.architecture import get_architecture_fn
 from int2vec.datasets import odd_even, dataset_utils
 from int2vec.estimator import get_estimator_fn, get_model_fn
-from int2vec.figures import plot_embeddings
+from int2vec.figures import make_plots, save_plots
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 FLAGS = tf.app.flags.FLAGS
@@ -22,51 +22,129 @@ tf.app.flags.DEFINE_integer(name='epochs', default=100,
                             help='The number of epochs in the training set.')
 tf.app.flags.DEFINE_integer(name='max_steps', default=1000,
                             help='The number of training steps.')
-tf.app.flags.DEFINE_string(name='model_dir', default='/tmp/int2vec/autoencoder',
+tf.app.flags.DEFINE_string(name='run_dir', default='/tmp/int2vec',
                            help='The location to save and restore results.')
+tf.app.flags.DEFINE_string(name='architecture', default='autoencoder',
+                           help='The model architecture. Most be one of '
+                                '`autoencoder` or `skipgram`.')
+tf.app.flags.DEFINE_string(name='dataset', default='odd_even',
+                           help='The dataset to use. Most be one of '
+                                '`odd_even` or `increasing`.')
+tf.app.flags.DEFINE_boolean(name='save_plots', default=True,
+                            help='`True` to save plots to model dir, `False` '
+                                 'otherwise.')
 
-np.random.seed(FLAGS.seed)
+_ARCHITECTURE_FEATURES_LABELS = {
+    'autoencoder': (['current'], ['current']),
+    'skipgram': (['current'], ['previous', 'next'])}
+_DATASETS = {'odd_even': odd_even}
 
-feature_cols, label_cols = ['current'], ['current']
 
-train_data = odd_even.get_data(size=FLAGS.chapter_size)
-eval_data = odd_even.get_data(size=FLAGS.chapter_size)
+def get_feature_label_cols(architecture):
+    if architecture not in _ARCHITECTURE_FEATURES_LABELS:
+        raise ValueError("Unknown architecture {}. Must be one of {}".format(
+            architecture, tuple(_ARCHITECTURE_FEATURES_LABELS.keys())))
 
-train_input_fn = dataset_utils.get_input_fn_from_data(
-    data=train_data,
-    feature_cols=feature_cols, label_cols=label_cols,
-    batch_size=FLAGS.chapter_size, epochs=FLAGS.epochs)
+    return _ARCHITECTURE_FEATURES_LABELS[architecture]
 
-eval_input_fn = dataset_utils.get_input_fn_from_data(
-    data=eval_data,
-    feature_cols=feature_cols, label_cols=label_cols,
-    batch_size=FLAGS.chapter_size, epochs=1)
 
-params = tf.contrib.training.HParams(
-    embed_dim=FLAGS.embed_dim,
-    learning_rate=FLAGS.learning_rate,
-    n_classes=odd_even.NUMBER_CLASSES,
-    max_steps=FLAGS.max_steps)
+def get_train_eval_input_fns(
+    dataset, feature_cols, label_cols, chapter_size, epochs):
+    if dataset not in _DATASETS:
+        raise ValueError("Unknown dataset {}. Must be one of {}".format(
+            dataset, tuple(_DATASETS.keys())))
 
-run_config = tf.estimator.RunConfig(model_dir=FLAGS.model_dir,
-                                    tf_random_seed=FLAGS.seed)
+    data = _DATASETS[dataset]
 
-architecture_fn = get_architecture_fn(label_cols=label_cols)
+    train_data = data.get_data(size=chapter_size)
+    eval_data = data.get_data(size=chapter_size)
 
-model_fn = get_model_fn(architecture_fn=architecture_fn)
+    train_input_fn = dataset_utils.get_input_fn_from_data(
+        data=train_data,
+        feature_cols=feature_cols, label_cols=label_cols,
+        batch_size=chapter_size, epochs=epochs)
 
-estimator_fn = get_estimator_fn(model_fn=model_fn)
+    eval_input_fn = dataset_utils.get_input_fn_from_data(
+        data=eval_data,
+        feature_cols=feature_cols, label_cols=label_cols,
+        batch_size=chapter_size, epochs=1)
 
-estimator = estimator_fn(run_config=run_config, params=params)
+    return train_input_fn, eval_input_fn
 
-train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn,
-                                    max_steps=params.max_steps)
-eval_spec = tf.estimator.EvalSpec(input_fn=train_input_fn, steps=100)
 
-tf.estimator.train_and_evaluate(estimator=estimator,
-                                train_spec=train_spec, eval_spec=eval_spec)
+def get_train_eval_spec(params):
+    train_input_fn, eval_input_fn = get_train_eval_input_fns(
+        dataset=params.dataset,
+        feature_cols=params.feature_cols,
+        label_cols=params.label_cols,
+        chapter_size=params.chapter_size,
+        epochs=params.epochs)
 
-embeddings = estimator.get_variable_value(name='integer_embed/embeddings')
-embeddings = normalize(embeddings, norm='l2', axis=1)
+    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn,
+                                        max_steps=params.max_steps)
+    eval_spec = tf.estimator.EvalSpec(input_fn=train_input_fn, steps=100)
 
-plot_embeddings(embeddings, title='int2vec autoencoder integer embeddings')
+    return train_spec, eval_spec
+
+
+def get_estimator(run_config, params):
+    architecture_fn = get_architecture_fn(label_cols=params.label_cols)
+
+    model_fn = get_model_fn(architecture_fn=architecture_fn)
+
+    estimator_fn = get_estimator_fn(model_fn=model_fn)
+
+    return estimator_fn(run_config=run_config, params=params)
+
+
+def get_run_config_params():
+    feature_cols, label_cols = get_feature_label_cols(
+        architecture=FLAGS.architecture)
+
+    model_dir = os.path.join(FLAGS.run_dir, FLAGS.dataset, FLAGS.architecture)
+
+    run_config = tf.estimator.RunConfig(model_dir=model_dir,
+                                        tf_random_seed=FLAGS.seed)
+
+    params = tf.contrib.training.HParams(
+        embed_dim=FLAGS.embed_dim,
+        learning_rate=FLAGS.learning_rate,
+        n_classes=odd_even.NUMBER_CLASSES,
+        max_steps=FLAGS.max_steps,
+        feature_cols=feature_cols,
+        label_cols=label_cols,
+        chapter_size=FLAGS.chapter_size,
+        epochs=FLAGS.epochs,
+        dataset=FLAGS.dataset)
+
+    return run_config, params
+
+
+def train_estimator(run_config, params):
+    estimator = get_estimator(run_config, params)
+
+    train_spec, eval_spec = get_train_eval_spec(params)
+
+    tf.estimator.train_and_evaluate(estimator=estimator,
+                                    train_spec=train_spec, eval_spec=eval_spec)
+
+    return estimator
+
+
+def main(unused_argv):
+    run_config, params = get_run_config_params()
+
+    np.random.seed(run_config.tf_random_seed)
+
+    estimator = train_estimator(run_config=run_config, params=params)
+
+    plots = make_plots(params=params, estimator=estimator)
+
+    if FLAGS.save_plots:
+        save_plots(plots=plots, run_config=run_config)
+
+    return estimator
+
+
+if __name__ == '__main__':
+    tf.app.run(main=main)

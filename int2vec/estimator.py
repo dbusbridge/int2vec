@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.python.ops.losses import losses
 
 from tensorflow.python.estimator.model_fn import ModeKeys
 
@@ -42,7 +43,9 @@ def get_model_fn(architecture_fn):
                                               predictions=predictions)
 
         heads = [tf.contrib.estimator.multi_class_head(
-            n_classes=params.n_classes, name=name) for name in logits]
+            n_classes=params.n_classes,
+            loss_reduction=losses.Reduction.MEAN,
+            name=name) for name in logits]
 
         head = tf.contrib.estimator.multi_head(heads=heads)
 
