@@ -1,6 +1,11 @@
 import numpy as np
 import tensorflow as tf
 
+from int2vec.datasets import odd_even
+
+
+_DATASETS = {'odd_even': odd_even}
+
 
 def _split_current_previous_next(a):
     return {'current': a[1:-1], 'previous': a[0:-2], 'next': a[2:]}
@@ -48,3 +53,27 @@ def get_input_fn_from_data(data, feature_cols, batch_size,
         return next_features, next_labels
 
     return input_fn
+
+
+def get_train_eval_input_fns(
+    dataset, feature_cols, label_cols, chapter_size, epochs):
+    if dataset not in _DATASETS:
+        raise ValueError("Unknown dataset {}. Must be one of {}".format(
+            dataset, tuple(_DATASETS.keys())))
+
+    data = _DATASETS[dataset]
+
+    train_data = data.get_data(size=chapter_size)
+    eval_data = data.get_data(size=chapter_size)
+
+    train_input_fn = get_input_fn_from_data(
+        data=train_data,
+        feature_cols=feature_cols, label_cols=label_cols,
+        batch_size=chapter_size, epochs=epochs)
+
+    eval_input_fn = get_input_fn_from_data(
+        data=eval_data,
+        feature_cols=feature_cols, label_cols=label_cols,
+        batch_size=chapter_size, epochs=1)
+
+    return train_input_fn, eval_input_fn

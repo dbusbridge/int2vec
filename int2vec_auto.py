@@ -37,7 +37,6 @@ tf.app.flags.DEFINE_boolean(name='save_plots', default=True,
 _ARCHITECTURE_FEATURES_LABELS = {
     'autoencoder': (['current'], ['current']),
     'skipgram': (['current'], ['previous', 'next'])}
-_DATASETS = {'odd_even': odd_even}
 
 
 def get_feature_label_cols(architecture):
@@ -48,32 +47,8 @@ def get_feature_label_cols(architecture):
     return _ARCHITECTURE_FEATURES_LABELS[architecture]
 
 
-def get_train_eval_input_fns(
-    dataset, feature_cols, label_cols, chapter_size, epochs):
-    if dataset not in _DATASETS:
-        raise ValueError("Unknown dataset {}. Must be one of {}".format(
-            dataset, tuple(_DATASETS.keys())))
-
-    data = _DATASETS[dataset]
-
-    train_data = data.get_data(size=chapter_size)
-    eval_data = data.get_data(size=chapter_size)
-
-    train_input_fn = dataset_utils.get_input_fn_from_data(
-        data=train_data,
-        feature_cols=feature_cols, label_cols=label_cols,
-        batch_size=chapter_size, epochs=epochs)
-
-    eval_input_fn = dataset_utils.get_input_fn_from_data(
-        data=eval_data,
-        feature_cols=feature_cols, label_cols=label_cols,
-        batch_size=chapter_size, epochs=1)
-
-    return train_input_fn, eval_input_fn
-
-
 def get_train_eval_spec(params):
-    train_input_fn, eval_input_fn = get_train_eval_input_fns(
+    train_input_fn, eval_input_fn = dataset_utils.get_train_eval_input_fns(
         dataset=params.dataset,
         feature_cols=params.feature_cols,
         label_cols=params.label_cols,
