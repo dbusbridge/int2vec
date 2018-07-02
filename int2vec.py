@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 from int2vec.architecture import get_architecture_fn, get_feature_label_cols
-from int2vec.datasets import odd_even, dataset_utils
+from int2vec.datasets import dataset_utils
 from int2vec.estimator import get_estimator_fn, get_model_fn
 from int2vec.figures import make_plots, save_plots
 
@@ -73,7 +73,7 @@ def get_run_config_params():
 
     params = tf.contrib.training.HParams(embed_dim=FLAGS.embed_dim,
                                          learning_rate=FLAGS.learning_rate,
-                                         n_classes=odd_even.NUMBER_CLASSES,
+                                         n_classes=dataset_utils.NUMBER_CLASSES,
                                          max_steps=FLAGS.max_steps,
                                          feature_cols=feature_cols,
                                          label_cols=label_cols,

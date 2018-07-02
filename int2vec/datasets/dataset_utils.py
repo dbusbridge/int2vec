@@ -3,12 +3,15 @@ import tensorflow as tf
 
 from int2vec.datasets import odd_even
 
+EVEN_NUMBERS, ODD_NUMBERS = list(range(0, 10, 2)), list(range(1, 10, 2))
+NUMBERS = EVEN_NUMBERS + ODD_NUMBERS
+NUMBER_CLASSES = len(NUMBERS)
 
-_DATASETS = {'odd_even': odd_even}
+DATASETS = {"odd_even": odd_even}
 
 
 def _split_current_previous_next(a):
-    return {'current': a[1:-1], 'previous': a[0:-2], 'next': a[2:]}
+    return {"current": a[1:-1], "previous": a[0:-2], "next": a[2:]}
 
 
 def _combine_dicts_by_key(dicts, agg_fn=lambda x: x):
@@ -57,11 +60,11 @@ def get_input_fn_from_data(data, feature_cols, batch_size,
 
 def get_train_eval_input_fns(
     dataset, feature_cols, label_cols, chapter_size, epochs):
-    if dataset not in _DATASETS:
+    if dataset not in DATASETS:
         raise ValueError("Unknown dataset {}. Must be one of {}".format(
-            dataset, tuple(_DATASETS.keys())))
+            dataset, tuple(DATASETS.keys())))
 
-    data = _DATASETS[dataset]
+    data = DATASETS[dataset]
 
     train_data = data.get_data(size=chapter_size)
     eval_data = data.get_data(size=chapter_size)
