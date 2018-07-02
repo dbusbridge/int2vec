@@ -37,6 +37,9 @@ tf.flags.DEFINE_integer(name="epochs", default=100,
                         help="The number of epochs in the training set.")
 tf.flags.DEFINE_integer(name="max_steps", default=1000,
                         help="The number of training steps.")
+tf.flags.DEFINE_integer(name="save_checkpoint_steps", default=100,
+                        help="Checkpoint frequency in steps.")
+
 
 FLAGS = tf.flags.FLAGS
 
@@ -73,8 +76,10 @@ def get_run_config_params():
     model_dir = os.path.join(
         FLAGS.run_dir, FLAGS.dataset, FLAGS.architecture, str(FLAGS.embed_dim))
 
-    run_config = tf.estimator.RunConfig(model_dir=model_dir,
-                                        tf_random_seed=FLAGS.seed)
+    run_config = tf.estimator.RunConfig(
+        model_dir=model_dir,
+        tf_random_seed=FLAGS.seed,
+        save_checkpoints_steps=FLAGS.save_checkpoint_steps)
 
     params = tf.contrib.training.HParams(embed_dim=FLAGS.embed_dim,
                                          learning_rate=FLAGS.learning_rate,
