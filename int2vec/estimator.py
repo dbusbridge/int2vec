@@ -35,9 +35,9 @@ def get_model_fn(architecture_fn):
             class_probabilities = tf.nn.softmax(logits,
                                                 name='class_probabilities')
             predictions = {
-                'logits': logits,
-                'classes': tf.argmax(input=logits, axis=1),
-                'class_probabilities': class_probabilities}
+                "logits": logits,
+                "classes": tf.argmax(input=logits, axis=1),
+                "class_probabilities": class_probabilities}
 
             return tf.estimator.EstimatorSpec(mode=mode,
                                               predictions=predictions)
