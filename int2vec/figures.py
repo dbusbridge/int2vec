@@ -74,7 +74,7 @@ def _save_fig(fig, path, verbose=True):
 
 
 def save_plots(plots, run_config):
-    img_path = os.path.join(run_config.model_dir, "img")
+    img_path = os.path.join(run_config.model_dir, "imgs")
     save_ok = {
         embedding_type: _save_fig(fig=fig,
                                   path=os.path.join(img_path, embedding_type))
