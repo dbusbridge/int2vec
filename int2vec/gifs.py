@@ -105,7 +105,7 @@ def make_gif(params, estimator):
     def update(i):
         return flatten([get_update(i, k) for k in ax_embedding_map])
 
-    tf.logging.info("Definiming animation function.")
+    tf.logging.info("Definiing animation function.")
     anim = FuncAnimation(fig, update, frames=100, interval=50, blit=True)
 
     gif_path = os.path.join(estimator.model_dir, 'gifs', 'training.gif')
