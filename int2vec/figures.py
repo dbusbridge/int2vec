@@ -23,13 +23,13 @@ def _plot_embeddings(embeddings, style="seaborn-white", title=None):
 
 
 def make_plots(params, estimator):
-    embeddings = estimator.get_variable_value(name="integer_embed/embeddings")
+    source = estimator.get_variable_value(name="integer_embed/embeddings")
     projections = {
         "_".join(["projection", col]): estimator.get_variable_value(
             name="projection_{}/kernel".format(col)).T
         for col in params.label_cols}
 
-    all_embeddings = {"source": embeddings, **projections}
+    all_embeddings = {"source": source, **projections}
 
     if params.embed_dim > 2:
         tf.logging.info(
