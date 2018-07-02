@@ -2,19 +2,30 @@
 
 ## Background
 
-Distributed representations are awesome. They can be created in many creative ways from unusual datasets. The most famous is probably `Word2Vec`, which creates a distributed representation for words. Good places to read about this are:
+Distributed representations are awesome. 
+They can be created in many creative ways from unusual datasets. 
+The most famous is probably `Word2Vec`, which creates a distributed representation for words. 
+Beyond words, the notion of learning "good" representations essentially underpins most of deep learning.
+Some good places to read about this are:
 
 + *Blog posts*
   + [Adrian Colyer - The amazing power of word vectors](https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/)
   + [Sebastian Ruder - On word embeddings](http://ruder.io/word-embeddings-1/index.html)
  
 + *Papers*
-  + [Kikolov et al. - Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781)
+  + [Mikolov et al. - Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781)
   + [Xin Rong - word2vec Parameter Learning Explained](https://arxiv.org/abs/1411.2738)
 
-## This code
+## This repo
 
-Here, for some [unknown] reason, we want to learn a distributed representation for images `Int2Vec` using TensorFlow. All embeddings are 2 dimensional for visualisation purposes. All embeddings ar `L2` normalised so they fit on the unit circle.
+Suppose we want to learn a distributed representation for integers. 
+Specifically, for each of the integers `0, 1, ..., 9` we want to assign some `d`-dimensional vector, where this vector has some meaning (relating to its integer).
+This repo contains a few datasets and models to play around with, and will hopefully shed some light on representation learning in a relatively simple setting.
+
+All code is in `python / TensorFlow` and `tf.keras.layers` is used for basic building blocks. The `Estimator` API is used for training and evaluating the model(s). 
+
+All embeddings ar `L2` normalised so they fit on the unit circle. 
+If embeddings have dimensionality > 2 then PCA is applied appropriately to extract the first 2 components of the embeddings matrix.
 
 ## The task
 Let's imagine we know nothing about integers from 0 to 9, and let's imagine we've come across a book containing two chapters:
