@@ -17,7 +17,7 @@ def _plot_embeddings(embeddings, style="seaborn-white", title=None):
         ax.annotate(i, xy=(x, y), fontsize=20)
 
     if title is not None:
-        ax.set_title(title, fontsize=30)
+        ax.set_title(title, fontsize=15)
 
     return fig, ax
 
@@ -29,7 +29,7 @@ def make_plots(params, estimator):
             name="projection_{}/kernel".format(col)).T
         for col in params.label_cols}
 
-    all_embeddings = {"embeddings": embeddings, **projections}
+    all_embeddings = {"source": embeddings, **projections}
 
     if params.embed_dim > 2:
         tf.logging.info(
@@ -48,9 +48,9 @@ def make_plots(params, estimator):
                       for col, p in all_embeddings.items()}
 
     def get_title(col):
-        return ("int2vec\nembedding: {}\ndataset: {}, architecture: {}, "
+        return ("int2vec, dataset: {}\nembedding: {}\narchitecture: {}, "
                 "embed_dim: {}").format(
-            col, params.dataset, params.architecture, params.embed_dim)
+            params.dataset, col, params.architecture, params.embed_dim)
 
     plots = {
         col: _plot_embeddings(p, title=get_title(col))
