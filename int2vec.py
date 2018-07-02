@@ -12,17 +12,7 @@ from int2vec.figures import make_plots, save_plots
 tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
-tf.flags.DEFINE_integer(name="seed", default=123, help="The random seed.")
-tf.flags.DEFINE_integer(name="chapter_size", default=10 ** 3,
-                        help="The size of each chapter.")
-tf.flags.DEFINE_integer(name="embed_dim", default=2,
-                        help="The size of the embedding.")
-tf.flags.DEFINE_float(name="learning_rate", default=1.0e-2,
-                      help="The learning rate.")
-tf.flags.DEFINE_integer(name="epochs", default=100,
-                        help="The number of epochs in the training set.")
-tf.flags.DEFINE_integer(name="max_steps", default=1000,
-                        help="The number of training steps.")
+# Important behavioural configurations
 tf.flags.DEFINE_string(name="run_dir", default="/tmp/int2vec",
                        help="The location to save and restore results.")
 tf.flags.DEFINE_string(name="architecture", default="autoencoder",
@@ -34,6 +24,19 @@ tf.flags.DEFINE_string(name="dataset", default="odd_even",
 tf.flags.DEFINE_boolean(name="save_plots", default=True,
                         help="`True` to save plots to model dir, `False` "
                              "otherwise.")
+
+# Other standard hyperparameters that you might want to play with
+tf.flags.DEFINE_float(name="learning_rate", default=1.0e-2,
+                      help="The learning rate.")
+tf.flags.DEFINE_integer(name="seed", default=123, help="The random seed.")
+tf.flags.DEFINE_integer(name="chapter_size", default=10 ** 3,
+                        help="The size of each chapter.")
+tf.flags.DEFINE_integer(name="embed_dim", default=2,
+                        help="The size of the embedding.")
+tf.flags.DEFINE_integer(name="epochs", default=100,
+                        help="The number of epochs in the training set.")
+tf.flags.DEFINE_integer(name="max_steps", default=1000,
+                        help="The number of training steps.")
 
 FLAGS = tf.flags.FLAGS
 
@@ -67,7 +70,8 @@ def get_run_config_params():
     feature_cols, label_cols = get_feature_label_cols(
         architecture=FLAGS.architecture)
 
-    model_dir = os.path.join(FLAGS.run_dir, FLAGS.dataset, FLAGS.architecture)
+    model_dir = os.path.join(
+        FLAGS.run_dir, FLAGS.dataset, FLAGS.architecture, str(FLAGS.embed_dim))
 
     run_config = tf.estimator.RunConfig(model_dir=model_dir,
                                         tf_random_seed=FLAGS.seed)
@@ -80,7 +84,8 @@ def get_run_config_params():
                                          label_cols=label_cols,
                                          chapter_size=FLAGS.chapter_size,
                                          epochs=FLAGS.epochs,
-                                         dataset=FLAGS.dataset)
+                                         dataset=FLAGS.dataset,
+                                         architecture=FLAGS.architecture)
 
     return run_config, params
 

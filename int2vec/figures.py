@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from sklearn.preprocessing import normalize
+from sklearn.decomposition import PCA
 
 
 def _plot_embeddings(embeddings, style="seaborn-white", title=None):
@@ -29,13 +30,30 @@ def make_plots(params, estimator):
         for col in params.label_cols}
 
     all_embeddings = {"embeddings": embeddings, **projections}
+
+    if params.embed_dim > 2:
+        tf.logging.info(
+            "Embedding dimension {} requires reducing. "
+            "Performing PCA to extract first 2 components.".format(
+                params.embed_dim))
+
+        pca_decomposers = {k: PCA(n_components=2) for k in all_embeddings}
+        pca_decomposers = {k: pca_decomposers[k].fit(emb)
+                           for k, emb in all_embeddings.items()}
+
+        all_embeddings = {k: pca_decomposers[k].transform(emb)
+                          for k, emb in all_embeddings.items()}
+
     all_embeddings = {col: normalize(p, norm="l2", axis=1)
                       for col, p in all_embeddings.items()}
 
+    def get_title(col):
+        return ("int2vec\nembedding: {}\ndataset: {}, architecture: {}, "
+                "embed_dim: {}").format(
+            col, params.dataset, params.architecture, params.embed_dim)
+
     plots = {
-        col: _plot_embeddings(
-            p,
-            title="int2vec skipgram integer {}".format(col))
+        col: _plot_embeddings(p, title=get_title(col))
         for col, p in all_embeddings.items()}
 
     return plots
