@@ -1,13 +1,10 @@
 import numpy as np
 import tensorflow as tf
 
+from int2vec.datasets import circle
 from int2vec.datasets import odd_even
 
-EVEN_NUMBERS, ODD_NUMBERS = list(range(0, 10, 2)), list(range(1, 10, 2))
-NUMBERS = EVEN_NUMBERS + ODD_NUMBERS
-NUMBER_CLASSES = len(NUMBERS)
-
-DATASETS = {"odd_even": odd_even}
+DATASETS = {"odd_even": odd_even, "circle": circle}
 
 
 def _split_current_previous_next(a):
@@ -26,9 +23,8 @@ def _combine_dicts_by_key(dicts, agg_fn=lambda x: x):
 def combine_chapters_curr_prev_next(chapters):
     chapters_c_p_n = [_split_current_previous_next(chp) for chp in chapters]
 
-    return _combine_dicts_by_key(
-        chapters_c_p_n,
-        agg_fn=lambda x: np.concatenate(x, axis=0))
+    return _combine_dicts_by_key(chapters_c_p_n,
+                                 agg_fn=lambda x: np.concatenate(x, axis=0))
 
 
 def get_input_fn_from_data(data, feature_cols, batch_size,
