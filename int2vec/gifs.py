@@ -108,7 +108,11 @@ def make_gif(params, estimator):
     tf.logging.info("Definiing animation function.")
     anim = FuncAnimation(fig, update, frames=100, interval=50, blit=True)
 
-    gif_path = os.path.join(estimator.model_dir, 'gifs', 'training.gif')
+    gif_dir = os.path.join(estimator.model_dir, 'gifs')
+    if not os.path.exists(gif_dir):
+        os.makedirs(gif_dir)
+
+    gif_path = os.path.join(gif_dir, 'training.gif')
 
     tf.logging.info("Building and saving gif.")
     anim.save(gif_path, dpi=80, writer='imagemagick')
