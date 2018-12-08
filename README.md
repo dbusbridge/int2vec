@@ -155,3 +155,7 @@ And the semantic relations between integers is recovered.
 # Final thoughts
 
 I hope I have convinced you to some extend that integers are a nice playground to try and understand unsupervised models of semantic properties.
+I would encourage playing around with increasing the vocabulary size and seeing how that interacts with the dimensionality of the embedding space.
+
+For future work it might be fun to remove the unit-circle constraint on the embeddings, allowing them to take any position on the plane. 
+From this point of view, it should be possible to construct corpora that, when trained with an appropriate objective, can yield any desired patterns in the plane.
