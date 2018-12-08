@@ -159,3 +159,5 @@ I would encourage playing around with increasing the vocabulary size and seeing 
 
 For future work it might be fun to remove the unit-circle constraint on the embeddings, allowing them to take any position on the plane. 
 From this point of view, it should be possible to construct corpora that, when trained with an appropriate objective, can yield any desired patterns in the plane.
+
+Please feel free to contact me with any suggestions/issues - happy embedding!
