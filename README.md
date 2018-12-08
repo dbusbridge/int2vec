@@ -127,14 +127,21 @@ data = circle.get_data(size=10)
 
 In the same way as we discovered the oddness and evenness of integers, let us try and recover the ordering of integers from this corpus.
 
+### Autoencoder
+
+First let's run the autoencoder.
 ```bash
 $ python int2vec.py --architecture=autoencoder --dataset=circle --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
 ```
+We again see the objectivetying together source and target embeddings, but we failed to recover the semantic relation (i.e. the ordering) of the integers in the space.  
 
 <br>
 <p align="center"><img src="img/circle/autoencoder/training.gif" height="567" width="757.5"></p>
 <br>
 
+### Skipgram
+
+Returning to our trusty skipgram friend...
 ```bash
 $ python int2vec.py --architecture=skipgram --dataset=circle --embed_dim=2 --max_steps=300 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
 ```
@@ -142,3 +149,9 @@ $ python int2vec.py --architecture=skipgram --dataset=circle --embed_dim=2 --max
 <br>
 <p align="center"><img src="img/circle/skipgram/training.gif" height="567" width="757.5"></p>
 <br>
+
+And the semantic relations between integers is recovered.
+
+# Final thoughts
+
+I hope I have convinced you to some extend that integers are a nice playground to try and understand unsupervised models of semantic properties.
