@@ -38,32 +38,15 @@ tf.flags.DEFINE_integer(name="chapter_size", default=10 ** 3,
                         help="The size of each chapter.")
 tf.flags.DEFINE_integer(name="embed_dim", default=2,
                         help="The size of the embedding.")
-tf.flags.DEFINE_integer(name="epochs", default=100,
-                        help="The number of epochs in the training set.")
 tf.flags.DEFINE_integer(name="max_steps", default=1000,
                         help="The number of training steps.")
-tf.flags.DEFINE_integer(name="save_checkpoint_steps", default=100,
+tf.flags.DEFINE_integer(name="save_checkpoints_steps", default=100,
                         help="Checkpoint frequency in steps.")
 tf.flags.DEFINE_integer(name="keep_checkpoints_max", default=5,
                         help="Number of checkpoints to keep.")
 
 
 FLAGS = tf.flags.FLAGS
-
-
-def get_train_eval_spec(params):
-    train_input_fn, eval_input_fn = dataset_utils.get_train_eval_input_fns(
-        dataset=params.dataset,
-        feature_cols=params.feature_cols,
-        label_cols=params.label_cols,
-        chapter_size=params.chapter_size,
-        epochs=params.epochs)
-
-    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn,
-                                        max_steps=params.max_steps)
-    eval_spec = tf.estimator.EvalSpec(input_fn=train_input_fn, steps=100)
-
-    return train_spec, eval_spec
 
 
 def get_estimator(run_config, params):
@@ -86,42 +69,46 @@ def get_run_config_params():
     run_config = tf.estimator.RunConfig(
         model_dir=model_dir,
         tf_random_seed=FLAGS.seed,
-        save_checkpoints_steps=FLAGS.save_checkpoint_steps,
+        save_checkpoints_steps=FLAGS.save_checkpoints_steps,
         keep_checkpoint_max=FLAGS.keep_checkpoints_max)
 
-    params = tf.contrib.training.HParams(embed_dim=FLAGS.embed_dim,
-                                         learning_rate=FLAGS.learning_rate,
-                                         n_classes=numbers.NUMBER_CLASSES,
-                                         max_steps=FLAGS.max_steps,
-                                         feature_cols=feature_cols,
-                                         label_cols=label_cols,
-                                         chapter_size=FLAGS.chapter_size,
-                                         epochs=FLAGS.epochs,
-                                         dataset=FLAGS.dataset,
-                                         architecture=FLAGS.architecture)
+    tf.logging.info("Run config: {}".format(run_config.__dict__))
+
+    params = tf.contrib.training.HParams(
+        embed_dim=FLAGS.embed_dim,
+        learning_rate=FLAGS.learning_rate,
+        n_classes=numbers.NUMBER_CLASSES,
+        max_steps=FLAGS.max_steps,
+        feature_cols=feature_cols,
+        label_cols=label_cols,
+        chapter_size=FLAGS.chapter_size,
+        dataset=FLAGS.dataset,
+        architecture=FLAGS.architecture)
+
+    tf.logging.info("Hyparameters: {}".format(params))
 
     return run_config, params
 
 
-def train_estimator(run_config, params):
-    estimator = get_estimator(run_config, params)
-
-    train_spec, eval_spec = get_train_eval_spec(params)
-
-    tf.estimator.train_and_evaluate(estimator=estimator,
-                                    train_spec=train_spec, eval_spec=eval_spec)
-
-    return estimator
-
-
 def main(unused_argv):
+    if FLAGS.make_gif and FLAGS.embed_dim > 2:
+        raise ValueError(
+            "Cannot produce gifs for embedding dimension greater than 2.")
+
     run_config, params = get_run_config_params()
 
     np.random.seed(run_config.tf_random_seed)
 
-    estimator = (train_estimator(run_config=run_config,
-                                 params=params) if FLAGS.train
-                 else get_estimator(run_config, params))
+    train_input_fn = dataset_utils.get_train_input_fn(
+        dataset=params.dataset,
+        feature_cols=params.feature_cols,
+        label_cols=params.label_cols,
+        chapter_size=params.chapter_size)
+
+    estimator = get_estimator(run_config, params)
+
+    if FLAGS.train:
+        estimator.train(input_fn=train_input_fn, max_steps=FLAGS.max_steps)
 
     if FLAGS.save_plots:
         plots = make_plots(params=params, estimator=estimator)

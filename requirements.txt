@@ -2,5 +2,4 @@ matplotlib==2.1.2
 numpy
 scipy
 scikit-learn
-tensorflow==1.8.0
-
+tensorflow==1.11.0

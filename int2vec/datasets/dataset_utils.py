@@ -35,15 +35,10 @@ def get_input_fn_from_data(data, feature_cols, batch_size,
         if shuffle:
             dataset = dataset.shuffle(buffer_size=10000)
 
+        dataset = dataset.repeat(count=epochs)
         dataset = dataset.batch(batch_size)
-
-        if epochs is not None:
-            dataset = dataset.repeat(count=epochs)
-
         iterator = dataset.make_one_shot_iterator()
-
         next_elements = iterator.get_next()
-
         next_features = {col: next_elements[col] for col in feature_cols}
 
         next_labels = None if label_cols is None else {
@@ -54,8 +49,8 @@ def get_input_fn_from_data(data, feature_cols, batch_size,
     return input_fn
 
 
-def get_train_eval_input_fns(
-    dataset, feature_cols, label_cols, chapter_size, epochs):
+def get_train_input_fn(
+    dataset, feature_cols, label_cols, chapter_size, epochs=None):
     if dataset not in DATASETS:
         raise ValueError("Unknown dataset {}. Must be one of {}".format(
             dataset, tuple(DATASETS.keys())))
@@ -63,16 +58,10 @@ def get_train_eval_input_fns(
     data = DATASETS[dataset]
 
     train_data = data.get_data(size=chapter_size)
-    eval_data = data.get_data(size=chapter_size)
 
     train_input_fn = get_input_fn_from_data(
         data=train_data,
         feature_cols=feature_cols, label_cols=label_cols,
         batch_size=chapter_size, epochs=epochs)
 
-    eval_input_fn = get_input_fn_from_data(
-        data=eval_data,
-        feature_cols=feature_cols, label_cols=label_cols,
-        batch_size=chapter_size, epochs=1)
-
-    return train_input_fn, eval_input_fn
+    return train_input_fn
