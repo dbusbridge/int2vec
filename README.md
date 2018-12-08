@@ -104,7 +104,7 @@ Gifs are stored in `$INT2VEC_DIR/odd_even/skipgram/2/gifs`.
 Let's just look at the gif this time.
 
 <br>
-<p align="center"><img src="img/odd_even/skipgram/training.gif" height="378" width="505"></p>
+<p align="center"><img src="img/odd_even/skipgram/training.gif" height="567" width="757.5"></p>
 <br>
 
 Our `Int2Vec` mission is complete.
