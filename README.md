@@ -107,7 +107,12 @@ Let's just look at the gif this time.
 <p align="center"><img src="img/odd_even/skipgram/training.gif" height="567" width="757.5"></p>
 <br>
 
-Our `Int2Vec` mission is complete.
+We see that the embedding space has recovered the oddness / evenness of the integers! 
+On top of this there are a few interesting things to note:
++ The objective stille ties the source and target embeddings together - across all of the embeddings, even integers are confined to the top left of the space, whereas odd integers lie in the bottom right of the space.
++ There is a noticable lag in the convergence of the target embeddings with respect to the source embeddings.
+
+This concludes our oddness/evenness `Int2Vec` mission.
 
 ## Bonus fun task
 We have just come across another corpus which contains (mostly) ordered, circular sequences, that is, sequences of the type:
