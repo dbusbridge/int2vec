@@ -87,6 +87,9 @@ To see the progression of the training, we can inspect the gif:
 <p align="center"><img src="img/odd_even/autoencoder/training.gif" height="378" width="505"></p>
 <br>
 
+I think this is pretty cool. What we see if the source and the target embeddings beginning essentially random.
+The reconstruction objective then ties the embeddings together - the source embedding and the target embeddings for the integers become aligned.
+
 ### Attempt 2 - Skipgram
 
 Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`. In this case, we want an integer to reconstruct the integers that appear either side of it in the corpus (this is essentially how `Word2Vec` is built in skipgram mode). The result is satisfying:
