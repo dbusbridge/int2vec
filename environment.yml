@@ -1,16 +1,9 @@
 name: env_int2vec
 dependencies:
-  - python>3.6.1
-  # Analysis
-  - matplotlib
-  # Calculations
-  - nomkl
-  - numpy
-  - scikit-learn
-  - scipy
-  # Reporting
+  - python>=3.6
   # Packages
   - pip
+  # Testing
+  - pytest
   - pip:
-    - tensorflow
-    - git+https://github.com/zsdonghao/tensorlayer.git
+    - "--editable=."
