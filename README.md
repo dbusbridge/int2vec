@@ -73,7 +73,7 @@ If you don't want to make a gif, then you can avoid setting the `keep_checkpoint
 Using any image program we can can see a fairly underwhelming result for the source embeddings:
 
 <br>
-<p align="center"><img src="img/odd_even/autoencoder/source.png" height="400" width="800"></p>
+<p align="center"><img src="img/odd_even/autoencoder/source.png" height="400" width="400"></p>
 <br>
 
 This should not really be a surprise if you think about it however. 
@@ -84,7 +84,7 @@ There is no reason why a hashing procedure should produce a representation of in
 To see the progression of the training, we can inspect the gif:
 
 <br>
-<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="400" width="400"></p>
+<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="400" width="800"></p>
 <br>
 
 ### Attempt 2 - Skipgram
