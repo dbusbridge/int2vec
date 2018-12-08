@@ -63,17 +63,29 @@ Our first attempt is to use an autoencoder, since if we can perfectly reconstruc
 Run this experiment by executing the following
 ```bash
 $ INT2VEC_DIR=/path/to/project/dir
-$ python int2vec.py --architecture=autoencoder --dataset=odd_even --embed_dim=2 --run_dir=$INT2VEC_DIR
+$ python int2vec.py --architecture=autoencoder --dataset=circle --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
 ```
 This will train the model and save output in `$INT2VEC_DIR/odd_even/autoencoder/2` (the 2 is for the embedding dimension).
-Images are stored in `$INT2VEC_DIR/odd_even/autoencoder/2/img`
-Using any image program we can can see a fairly underwhelming result:
+Images are stored in `$INT2VEC_DIR/odd_even/autoencoder/2/imgs` and correspond to the final position of the embeddings.
+Gifs are stored in `$INT2VEC_DIR/odd_even/autoencoder/2/gifs` and show the progression of the embeddings over time. 
+One frame is assigned per checkpoint, and all checkpoints are displayed. 
+If you don't want to make a gif, then you can avoid setting the `keep_checkpoints_max`, `save_checkpoints_steps` and `make_gif` flag.
+Using any image program we can can see a fairly underwhelming result for the source embeddings:
 
 <br>
-<p align="center"><img src="img/int2vec_auto.png" height="400" width="400"></p>
+<p align="center"><img src="img/odd_even/autoencoder/source.png" height="400" width="400"></p>
 <br>
 
-This should not really be a surprise if you think about it however. We are only feeding essentially one-hot representations of the integers and forcing these representations to reconstruct themselves. Since integers don't have any internal structure (unless we were to, for example, build a binary representation), then this essentially becomes a hashing procedure. There is no reason why a hashing procedure should produce a representation of integers that is in any way useful.
+This should not really be a surprise if you think about it however. 
+We are only feeding essentially one-hot representations of the integers and forcing these representations to reconstruct themselves. 
+Since integers don't have any internal structure (unless we were to, for example, build a binary representation), then this essentially becomes a hashing procedure. 
+There is no reason why a hashing procedure should produce a representation of integers that is in any way useful.
+
+To see the progression of the training, we can inspect the gif:
+
+<br>
+<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="400" width="400"></p>
+<br>
 
 ### Attempt 2 - Skipgram
 
