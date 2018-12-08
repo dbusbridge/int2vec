@@ -84,7 +84,7 @@ There is no reason why a hashing procedure should produce a representation of in
 To see the progression of the training, we can inspect the gif:
 
 <br>
-<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="378" width="505"></p>
+<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="567" width="757.5"></p>
 <br>
 
 I think this is pretty cool. What we see if the source and the target embeddings beginning essentially random.
