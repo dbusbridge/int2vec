@@ -89,7 +89,9 @@ To see the progression of the training, we can inspect the gif:
 
 I think this is pretty cool. What we see if the source and the target embeddings beginning essentially random.
 The reconstruction objective then ties the embeddings together - the source embedding and the target embeddings for the integers become aligned.
-
+The relative positions of the integers in the embedding spaces themselves carries no semantic content, however. 
+We will need to work harder.
+  
 ### Attempt 2 - Skipgram
 
 Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`. In this case, we want an integer to reconstruct the integers that appear either side of it in the corpus (this is essentially how `Word2Vec` is built in skipgram mode). The result is satisfying:
