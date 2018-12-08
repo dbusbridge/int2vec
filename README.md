@@ -94,10 +94,17 @@ We will need to work harder.
   
 ### Attempt 2 - Skipgram
 
-Instead of the autoencoder, let's try the skipgraph approach found in `int2vec_skip.py`. In this case, we want an integer to reconstruct the integers that appear either side of it in the corpus (this is essentially how `Word2Vec` is built in skipgram mode). The result is satisfying:
+Instead of the autoencoder, let's try a skipgram, approach.
+```bash
+$ INT2VEC_DIR=/path/to/project/dir
+$ python int2vec.py --architecture=skipgram --dataset=odd_even --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
+```
+Images are stored in `$INT2VEC_DIR/odd_even/skipgram/2/imgs` and correspond to the final position of the embeddings.
+Gifs are stored in `$INT2VEC_DIR/odd_even/skipgram/2/gifs`. 
+Let's just look at the gif this time.
 
 <br>
-<p align="center"><img src="img/int2vec_skip.png" height="400" width="400"></p>
+<p align="center"><img src="img/odd_even/skipgram/training.gif" height="378" width="505"></p>
 <br>
 
 Our `Int2Vec` mission is complete.
