@@ -84,7 +84,7 @@ There is no reason why a hashing procedure should produce a representation of in
 To see the progression of the training, we can inspect the gif:
 
 <br>
-<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="400" width="800"></p>
+<p align="center"><img src="img/odd_even/autoencoder/training.gif" height="378" width="505"></p>
 <br>
 
 ### Attempt 2 - Skipgram
