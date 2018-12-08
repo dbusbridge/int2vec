@@ -96,8 +96,7 @@ We will need to work harder.
 
 Instead of the autoencoder, let's try a skipgram, approach.
 ```bash
-$ INT2VEC_DIR=/path/to/project/dir
-$ python int2vec.py --architecture=skipgram --dataset=odd_even --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
+$ python int2vec.py --architecture=skipgram --dataset=odd_even --embed_dim=2 --max_steps=200 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
 ```
 Images are stored in `$INT2VEC_DIR/odd_even/skipgram/2/imgs` and correspond to the final position of the embeddings.
 Gifs are stored in `$INT2VEC_DIR/odd_even/skipgram/2/gifs`. 
@@ -122,12 +121,24 @@ data = circle.get_data(size=10)
 # Example data
 # {'current':  array([3, 3, 4, 5, 6, 8, 9, 0]), 
 #  'previous': array([1, 3, 3, 4, 5, 6, 8, 9]), 
-#   'next': array([3, 4, 5, 6, 8, 9, 0, 0])}
+#  'next':     array([3, 4, 5, 6, 8, 9, 0, 0])}
 ```
-(Technical aside: a small amount of noise is added to the sequences to let them contain more information about which numbers are close to each other)
+(Technical aside: a small amount of noise is added to the sequences to let them contain more information about which numbers are close to each other).
 
-Of course, knowing about numbers, we don't know that they are ordered yet. The code for training with this new corpus is in `int2vec_skip_circle.py` and the results are glorious:
+In the same way as we discovered the oddness and evenness of integers, let us try and recover the ordering of integers from this corpus.
+
+```bash
+$ python int2vec.py --architecture=autoencoder --dataset=circle --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
+```
 
 <br>
-<p align="center"><img src="img/int2vec_skip_circle.png" height="400" width="400"></p>
+<p align="center"><img src="img/circle/autoencoder/training.gif" height="567" width="757.5"></p>
+<br>
+
+```bash
+$ python int2vec.py --architecture=skipgram --dataset=circle --embed_dim=2 --max_steps=300 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
+```
+
+<br>
+<p align="center"><img src="img/circle/skipgram/training.gif" height="567" width="757.5"></p>
 <br>
