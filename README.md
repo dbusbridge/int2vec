@@ -63,7 +63,7 @@ Our first attempt is to use an autoencoder, since if we can perfectly reconstruc
 Run this experiment by executing the following
 ```bash
 $ INT2VEC_DIR=/path/to/project/dir
-$ python int2vec.py --architecture=autoencoder --dataset=circle --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
+$ python int2vec.py --architecture=autoencoder --dataset=odd_even --embed_dim=2 --max_steps=1000 --keep_checkpoints_max=9999 --save_checkpoints_steps=2 --run_dir=$INT2VEC_DIR --make_gif
 ```
 This will train the model and save output in `$INT2VEC_DIR/odd_even/autoencoder/2` (the 2 is for the embedding dimension).
 Images are stored in `$INT2VEC_DIR/odd_even/autoencoder/2/imgs` and correspond to the final position of the embeddings.
