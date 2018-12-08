@@ -68,7 +68,7 @@ def _save_fig(fig, path, verbose=True):
     save_ok = fig.savefig(path, dpi=300, figsize=(10, 10), bbox_inches="tight")
 
     if verbose:
-        tf.logging.info("Saved figure to {}".format(path))
+        tf.logging.info("Saved figure to {}.png".format(path))
 
     return save_ok
 
