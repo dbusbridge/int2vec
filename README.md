@@ -45,9 +45,9 @@ The corresponding dataset is located in `int2vec/datasets/odd_even` and returns,
 from int2vec.datasets import odd_even
 data = odd_even.get_data(size=5)
 # Example data
-# {'current': array([6, 8, 4, 5, 5, 1]), 
+# {'current':  array([6, 8, 4, 5, 5, 1]), 
 #  'previous': array([0, 6, 8, 5, 5, 5]), 
-#  'next': array([8, 4, 6, 5, 1, 1])}
+#  'next':     array([8, 4, 6, 5, 1, 1])}
 ```
 
 Can we learn reasonable embeddings from this scenario that can recover some properties of integers?
@@ -116,8 +116,13 @@ This concludes our oddness/evenness `Int2Vec` mission.
 
 ## Bonus fun task
 We have just come across another corpus which contains (mostly) ordered, circular sequences, that is, sequences of the type:
-```
-[8, 9, 0, 1, 2, ..., 8, 9, 0, ...]
+```python
+from int2vec.datasets import circle
+data = circle.get_data(size=10)
+# Example data
+# {'current':  array([3, 3, 4, 5, 6, 8, 9, 0]), 
+#  'previous': array([1, 3, 3, 4, 5, 6, 8, 9]), 
+#   'next': array([3, 4, 5, 6, 8, 9, 0, 0])}
 ```
 (Technical aside: a small amount of noise is added to the sequences to let them contain more information about which numbers are close to each other)
 
