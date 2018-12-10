@@ -1,6 +1,6 @@
 name: env_int2vec
 dependencies:
-  - python>=3.6
+  - python==3.6
   # Packages
   - pip
   # Testing
